@@ -6,6 +6,7 @@ class Whiskers
   include Nokogiri, Zip
   
   attr_accessor :file_string
+  
   def initialize(file_name)
     odt = ZipFile.open(file_name)
     @content_xml = XML::parse(odt.read('content.xml'))
