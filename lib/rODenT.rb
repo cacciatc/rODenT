@@ -29,7 +29,6 @@ class Whiskers
     xml.xpath('office:document-content/office:body/office:text/text:list')
   end
   def self.footnotes(xml)
-    
   end
   private :initialize
 end
