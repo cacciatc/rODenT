@@ -2,6 +2,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'zip/zipfilesystem'
 
+
 class Whiskers
   include Nokogiri, Zip
   attr_accessor :file_string
