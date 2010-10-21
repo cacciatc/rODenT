@@ -27,29 +27,38 @@ class Rodent
   include Nokogiri, Zip
   attr_accessor :file_string
   
+  OR   = '|'
+  PARA = 'text:p'
+  LIST = 'text:list'
+  DOC  = 'office:document-content/office:body/office:text/'
   def initialize(file_name)
     odt = ZipFile.open(file_name)
     @content_xml = XML::parse(odt.read('content.xml'))
+    @lists,@paras = [],[]
+    #inject was giving funny behavior...so looping explicitly
+    i = 1
+    @content_xml.xpath("#{DOC} #{PARA} #{OR} #{DOC} #{LIST}").each do |node|
+      #got to be a better way to do this...
+      case node.to_s
+        when /^<text:p/
+          @paras << {:node=>node.text,:ord=>i}
+        when /^<text:list/
+          @lists << {:node=>node.text,:ord=>i}
+        end
+        i += 1
+    end
   end
   def self.scurry(string,&b)
     yield Rodent.new(string)
   end
-  def paragraphs
-    Rodent.paragraphs(@content_xml)
+  def paragraphs(&b)
+    @paras
   end
-  def lists
-    Rodent.lists(@content_xml)
+  def lists(&b)
+    @lists
   end
   def footnotes
     Rodent.footnotes(@content_xml)
-  end
-  def self.paragraphs(xml)
-    xml.xpath('office:document-content/office:body/office:text/text:p')
-  end
-  def self.lists(xml)
-    xml.xpath('office:document-content/office:body/office:text/text:list')
-  end
-  def self.footnotes(xml)
   end
   private :initialize
 end
@@ -59,5 +68,4 @@ class SmallFurryThing < Rodent;end
 
 Rat.scurry 'test/test.odt' do |rat|
   puts rat.lists
-  puts rat.paragraphs
 end
