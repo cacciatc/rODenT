@@ -23,7 +23,7 @@ require 'nokogiri'
 require 'zip/zipfilesystem'
 
 
-class Whiskers
+class Rodent
   include Nokogiri, Zip
   attr_accessor :file_string
   
@@ -32,16 +32,16 @@ class Whiskers
     @content_xml = XML::parse(odt.read('content.xml'))
   end
   def self.scurry(string,&b)
-    yield Whiskers.new(string)
+    yield Rodent.new(string)
   end
   def paragraphs
-    Whiskers.paragraphs(@content_xml)
+    Rodent.paragraphs(@content_xml)
   end
   def lists
-    Whiskers.lists(@content_xml)
+    Rodent.lists(@content_xml)
   end
   def footnotes
-    Whiskers.footnotes(@content_xml)
+    Rodent.footnotes(@content_xml)
   end
   def self.paragraphs(xml)
     xml.xpath('office:document-content/office:body/office:text/text:p')
@@ -53,8 +53,11 @@ class Whiskers
   end
   private :initialize
 end
+class Rat < Rodent;end
+class Mouse < Rodent;end
+class SmallFurryThing < Rodent;end
 
-Whiskers.scurry 'test/test.odt' do |rat|
+Rat.scurry 'test/test.odt' do |rat|
   puts rat.lists
   puts rat.paragraphs
 end
