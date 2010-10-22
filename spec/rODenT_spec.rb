@@ -1,17 +1,16 @@
 require 'rODenT'
 
-describe "rODent" do
-  describe Whiskers do
+describe "rODent's" do
+  describe Rat do
     it "should list paragraphs" do
-      Whiskers.paragraphs('')
-      fail
+      rat = Rat.scurry('test\test.odt') 
+      rat.paragraphs.empty?.should == false
     end
     it "should list lists" do
-      Whiskers.lists('')
-      fail
+      rat = Rat.scurry('test\test.odt') 
+      rat.lists.empty?.should == false
     end
     it "should list footnotes" do
-      Whiskers.footnotes('')
       fail
     end
   end

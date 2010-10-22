@@ -49,7 +49,11 @@ class Rodent
     end
   end
   def self.scurry(string,&b)
-    yield Rodent.new(string)
+    if b == nil
+      Rodent.new(string)
+    else
+      yield Rodent.new(string)
+    end
   end
   def paragraphs(&b)
     @paras
