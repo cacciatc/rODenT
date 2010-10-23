@@ -37,10 +37,12 @@ class Rodent
   TABLE_CELL = 'table:table-cell'
   
   DOC   = 'office:document-content/office:body/office:text/'
+  STYLE = 'office:document-styles/office:master-styles/style:master-page/style:footer'
   def initialize(file_name)
     odt = ZipFile.open(file_name)
     @content_xml = XML::parse(odt.read('content.xml'))
-    @lists,@paras,@tables = [],[],[]
+    @styles_xml   = XML::parse(odt.read('styles.xml'))
+    @lists,@paras,@tables,@footnotes = [],[],[],[]
     #inject was giving funny behavior...so looping explicitly
     i = 1
     @content_xml.xpath("#{DOC} #{PARA} #{OR} 
@@ -56,7 +58,10 @@ class Rodent
           @tables << {:node=>node.text,:ord=>i}
         end
         i += 1
-    end
+      end
+      @styles_xml.xpath(STYLE).each do |node|
+        @footnotes << {:node=>node.text}
+      end
   end
   def self.scurry(string,&b)
     if not block_given?
@@ -80,7 +85,11 @@ class Rodent
     end
   end
   def footnotes
-    Rodent.footnotes(@content_xml)
+    if block_given?
+      yield @footnotes
+    else
+      @footnotes
+    end
   end
   def tables
     if block_given?
