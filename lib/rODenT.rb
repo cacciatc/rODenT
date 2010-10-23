@@ -27,49 +27,70 @@ class Rodent
   include Nokogiri, Zip
   attr_accessor :file_string
   
-  OR   = '|'
-  PARA = 'text:p'
-  LIST = 'text:list'
-  DOC  = 'office:document-content/office:body/office:text/'
+  OR    = '|'
+  PARA  = 'text:p'
+  LIST  = 'text:list'
+  
+  TABLE = 'table:table'
+  TABLE_ROW  = 'table:table-column'
+  TABLE_COL  = 'table:table-row'
+  TABLE_CELL = 'table:table-cell'
+  
+  DOC   = 'office:document-content/office:body/office:text/'
   def initialize(file_name)
     odt = ZipFile.open(file_name)
     @content_xml = XML::parse(odt.read('content.xml'))
-    @lists,@paras = [],[]
+    @lists,@paras,@tables = [],[],[]
     #inject was giving funny behavior...so looping explicitly
     i = 1
-    @content_xml.xpath("#{DOC} #{PARA} #{OR} #{DOC} #{LIST}").each do |node|
+    @content_xml.xpath("#{DOC} #{PARA} #{OR} 
+                        #{DOC} #{LIST} #{OR}
+                        #{DOC} #{TABLE}").each do |node|
       #got to be a better way to do this...
       case node.to_s
         when /^<text:p/
-          @paras << {:node=>node.text,:ord=>i}
+          @paras  << {:node=>node.text,:ord=>i}
         when /^<text:list/
-          @lists << {:node=>node.text,:ord=>i}
+          @lists  << {:node=>node.text,:ord=>i}
+        when /^<table:table/
+          @tables << {:node=>node.text,:ord=>i}
         end
         i += 1
     end
   end
   def self.scurry(string,&b)
-    if b == nil
+    if not block_given?
       Rodent.new(string)
     else
       yield Rodent.new(string)
     end
   end
   def paragraphs(&b)
-    @paras
+    if block_given?
+      yield @paras
+    else
+      @paras
+    end
   end
   def lists(&b)
-    @lists
+    if block_given?
+      yield @lists
+    else
+      @lists
+    end
   end
   def footnotes
     Rodent.footnotes(@content_xml)
+  end
+  def tables
+    if block_given?
+      yield @tables
+    else
+      @tables
+    end
   end
   private :initialize
 end
 class Rat < Rodent;end
 class Mouse < Rodent;end
 class SmallFurryThing < Rodent;end
-
-Rat.scurry 'test/test.odt' do |rat|
-  puts rat.lists
-end

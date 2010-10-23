@@ -13,5 +13,9 @@ describe "rODent's" do
     it "should list footnotes" do
       fail
     end
+    it "should list tables" do
+      rat = Rat.scurry('test\test.odt') 
+      rat.tables.empty?.should == false
+    end
   end
 end
