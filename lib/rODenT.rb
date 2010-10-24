@@ -29,11 +29,13 @@ class Rodent
   
   OR    = '|'
   PARA  = 'text:p'
-  LIST  = 'text:list'
+  
+  LIST      = 'text:list'
+  LIST_ITEM = 'text:list-item/text:p'
   
   TABLE = 'table:table'
-  TABLE_ROW  = 'table:table-column'
-  TABLE_COL  = 'table:table-row'
+  TABLE_ROW  = 'table:table-row'
+  TABLE_COL  = 'table:table-col'
   TABLE_CELL = 'table:table-cell'
   
   DOC   = 'office:document-content/office:body/office:text/'
@@ -53,9 +55,13 @@ class Rodent
         when /^<text:p/
           @paras  << {:node=>node.text,:ord=>i}
         when /^<text:list/
-          @lists  << {:node=>node.text,:ord=>i}
+          @lists  << {:node=>node.xpath(LIST_ITEM).collect {|n| n.text},:ord=>i}
         when /^<table:table/
-          @tables << {:node=>node.text,:ord=>i}
+          @tables << {:node=>node.xpath(TABLE_ROW).collect do |row| 
+            row.xpath("#{TABLE_CELL}/#{PARA}").collect do |n|
+              n.text
+            end
+          end,:ord=>i}
         end
         i += 1
       end
@@ -103,3 +109,6 @@ end
 class Rat < Rodent;end
 class Mouse < Rodent;end
 class SmallFurryThing < Rodent;end
+
+rat = Rat.scurry('test/test.odt')
+puts rat.tables
