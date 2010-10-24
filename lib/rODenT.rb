@@ -69,7 +69,7 @@ class Rodent
       @footnotes << {:node=>node.text}
     end
   end
-  def self.guarded(param)
+  def self.guarded(param,&b)
     if block_given?
       yield param
     else
@@ -77,19 +77,19 @@ class Rodent
     end
   end
   def self.scurry(string,&b)
-    Rodent.guarded(Rodent.new(string))
+    Rodent.guarded(Rodent.new(string),&b)
   end
   def paragraphs(&b)
-    Rodent.guarded(@paras)
+    Rodent.guarded(@paras,&b)
   end
   def lists(&b)
-    Rodent.guarded(@lists)
+    Rodent.guarded(@lists,&b)
   end
-  def footnotes
-    Rodent.guarded(@footnotes)
+  def footnotes(&b)
+    Rodent.guarded(@footnotes,&b)
   end
-  def tables
-    Rodent.guarded(@tables)
+  def tables(&b)
+    Rodent.guarded(@tables,&b)
   end
   private :initialize
 end
