@@ -49,7 +49,7 @@ class Rodent
     i = 1
     @content_xml.xpath("#{DOC} #{PARA} #{OR} 
                         #{DOC} #{LIST} #{OR}
-                        #{DOC} #{TABLE}").each do |node|
+                        #{DOC} #{TABLE}").to_a.each do |node|
       #got to be a better way to do this...
       case node.to_s
         when /^<text:p/
