@@ -22,7 +22,6 @@ require 'rubygems'
 require 'nokogiri'
 require 'zip/zipfilesystem'
 
-
 class Rodent
   include Nokogiri, Zip
   attr_accessor :file_string
@@ -40,6 +39,7 @@ class Rodent
   
   DOC   = 'office:document-content/office:body/office:text/'
   STYLE = 'office:document-styles/office:master-styles/style:master-page/style:footer'
+  
   def initialize(file_name)
     odt = ZipFile.open(file_name)
     @content_xml = XML::parse(odt.read('content.xml'))
@@ -65,50 +65,34 @@ class Rodent
         end
         i += 1
       end
-      @styles_xml.xpath(STYLE).each do |node|
-        @footnotes << {:node=>node.text}
-      end
+    @styles_xml.xpath(STYLE).each do |node|
+      @footnotes << {:node=>node.text}
+    end
+  end
+  def self.guarded(param)
+    if block_given?
+      yield param
+    else
+      param
+    end
   end
   def self.scurry(string,&b)
-    if not block_given?
-      Rodent.new(string)
-    else
-      yield Rodent.new(string)
-    end
+    Rodent.guarded(Rodent.new(string))
   end
   def paragraphs(&b)
-    if block_given?
-      yield @paras
-    else
-      @paras
-    end
+    Rodent.guarded(@paras)
   end
   def lists(&b)
-    if block_given?
-      yield @lists
-    else
-      @lists
-    end
+    Rodent.guarded(@lists)
   end
   def footnotes
-    if block_given?
-      yield @footnotes
-    else
-      @footnotes
-    end
+    Rodent.guarded(@footnotes)
   end
   def tables
-    if block_given?
-      yield @tables
-    else
-      @tables
-    end
+    Rodent.guarded(@tables)
   end
   private :initialize
 end
 class Rat < Rodent;end
 class Mouse < Rodent;end
 class SmallFurryThing < Rodent;end
-
-rat = Rat.scurry('test/test.odt')
-puts rat.tables
