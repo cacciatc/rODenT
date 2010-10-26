@@ -11,5 +11,7 @@ What A Rodent Is Good For
 
 What A Rodent Is Bad For
 ========================
-* Scurrying inside ODT documents with a new element in its dirty little mouth (or at least not supported at the moment).
-*
+* Scurrying inside ODT documents with a new element in its dirty little mouth (or at least not supported at the moment.)
+* Being predictable (API will probably change soon.)
+
+-C
