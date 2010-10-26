@@ -140,6 +140,3 @@ end
 class Rat < Rodent;end
 class Mouse < Rodent;end
 class SmallFurryThing < Rodent;end
-
-rat = Rat.scurry('test/test.odt')
-puts rat.paragraphs
